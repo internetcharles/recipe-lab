@@ -3,6 +3,7 @@ const pool = require('../lib/utils/pool');
 const request = require('supertest');
 const app = require('../lib/app');
 const Recipe = require('../lib/models/recipe');
+const Log = require('../lib/models/log')
 
 describe('recipe-lab routes', () => {
   beforeEach(() => {
@@ -156,4 +157,72 @@ describe('recipe-lab routes', () => {
       ],
     });
   })
+});
+
+describe('log-lab routes', () => {
+  beforeEach(() => {
+    return pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
+  });
+
+  it('creates a log', async () => {
+    const recipe = await Recipe.insert({
+      name: 'cookies',
+      directions: [
+        'preheat oven to 375',
+        'mix ingredients',
+        'put dough on cookie sheet',
+        'bake for 10 minutes'
+      ],
+    });
+
+    return request(app)
+      .post('/api/v1/logs')
+      .send({
+        recipeId: recipe.id,
+        dateOfEvent: '2021-01-01',
+        notes: 'delicious',
+        rating: 5
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          id: expect.any(String),
+          recipeId: '1',
+          dateOfEvent: '2021-01-01',
+          notes: 'delicious',
+          rating: '5'
+        });
+      });
+  });
+
+  it('gets all logs', async() => {
+    const recipe = await Recipe.insert({
+      name: 'cookies',
+      directions: [
+        'preheat oven to 375',
+        'mix ingredients',
+        'put dough on cookie sheet',
+        'bake for 10 minutes'
+      ],
+    });
+
+    const log = await Log.insert({
+      recipeId: recipe.id,
+      dateOfEvent: '2021-01-01',
+      notes: 'delicious',
+      rating: "5"
+    });
+
+    return request(app)
+      .get('/api/v1/logs')
+      .then(res => {
+        expect(res.body).toEqual([{
+          id: expect.any(String),
+          recipeId: recipe.id,
+          dateOfEvent: '2021-01-01',
+          notes: 'delicious',
+          rating: "5"
+        }])
+      });
+  });
+
 });
