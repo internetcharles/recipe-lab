@@ -113,4 +113,100 @@ describe('recipe-lab routes', () => {
       }
     )
   });
+
+  it('changes recipe', async() => {
+    const recipe = await Recipe.insert({
+      name: 'cookies',
+      directions: [
+        'preheat oven to 375',
+        'mix ingredients',
+        'put dough on cookie sheet',
+        'bake for 10 minutes'
+      ],
+    });
+    
+    const response = await request(app)
+      .put(`/api/v1/recipes/${recipe.id}`)
+      .send({
+        name: 'not cookie',
+        directions: [
+          'dont bake them',
+          'please',
+        ] 
+      });
+      expect(response.body).toEqual({
+        name: 'not cookie',
+        id: recipe.id,
+        directions: [
+          'dont bake them',
+          'please',
+        ] 
+      });
+  });
+
+  it('deletes a recipe', async() => {
+      const recipe = await Recipe.insert({
+      name: 'cookies',
+      directions: [
+        'preheat oven to 375',
+        'mix ingredients',
+        'put dough on cookie sheet',
+        'bake for 10 minutes'
+      ],
+    });
+  })
+
+    it('creates a recipe', () => {
+    return request(app)
+      .post('/api/v1/recipes')
+      .send({
+        name: 'cookies',
+        directions: [
+          'preheat oven to 375',
+          'mix ingredients',
+          'put dough on cookie sheet',
+          'bake for 10 minutes'
+        ]
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          id: expect.any(String),
+          name: 'cookies',
+          directions: [
+            'preheat oven to 375',
+            'mix ingredients',
+            'put dough on cookie sheet',
+            'bake for 10 minutes'
+          ]
+        });
+      });
+  });
+
+  it('gets recipe by id', async() => {
+    const recipe = await Recipe.insert({
+      name: 'cookies',
+      directions: [
+        'preheat oven to 375',
+        'mix ingredients',
+        'put dough on cookie sheet',
+        'bake for 10 minutes'
+      ],
+    });
+    
+    const response = await request(app)
+      .delete(`/api/v1/recipes/${recipe.id}`);
+
+    expect(response.body).toEqual(
+      {
+        id: expect.any(String),
+        name: 'cookies',
+        directions: [
+          'preheat oven to 375',
+          'mix ingredients',
+          'put dough on cookie sheet',
+          'bake for 10 minutes'
+        ]
+      }
+    )
+  });
 });
