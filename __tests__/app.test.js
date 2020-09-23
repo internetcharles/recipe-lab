@@ -216,7 +216,7 @@ describe('log-lab routes', () => {
       .get('/api/v1/logs')
       .then(res => {
         expect(res.body).toEqual([{
-          id: expect.any(String),
+          id: log.id,
           recipeId: recipe.id,
           dateOfEvent: '2021-01-01',
           notes: 'delicious',
@@ -251,8 +251,43 @@ describe('log-lab routes', () => {
           recipeId: recipe.id,
           dateOfEvent: '2021-01-01',
           notes: 'delicious',
-          rating: "5"
+          rating: '5'
         })
+      });
+  });
+
+  it('changes log', async() => {
+    const recipe = await Recipe.insert({
+      name: 'cookies',
+      directions: [
+        'preheat oven to 375',
+        'mix ingredients',
+        'put dough on cookie sheet',
+        'bake for 10 minutes'
+      ],
+    });
+
+    const log = await Log.insert({
+      recipeId: recipe.id,
+      dateOfEvent: '2021-01-01',
+      notes: 'delicious',
+      rating: "5"
+    });
+    
+    const response = await request(app)
+      .put(`/api/v1/logs/${log.id}`)
+      .send({
+        recipeId: recipe.id,
+        dateOfEvent: '2021-01-01',
+        notes: 'aaaaaaaaa',
+        rating: '1'
+      });
+      expect(response.body).toEqual({
+        recipeId: recipe.id,
+        dateOfEvent: '2021-01-01',
+        notes: 'aaaaaaaaa',
+        rating: '1',
+        id: '1'
       });
   });
 });
