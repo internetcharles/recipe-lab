@@ -20,7 +20,8 @@ describe('recipe-lab routes', () => {
           'mix ingredients',
           'put dough on cookie sheet',
           'bake for 10 minutes'
-        ]
+        ],
+        ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
       })
       .then(res => {
         expect(res.body).toEqual({
@@ -31,16 +32,17 @@ describe('recipe-lab routes', () => {
             'mix ingredients',
             'put dough on cookie sheet',
             'bake for 10 minutes'
-          ]
+          ],
+          ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
         });
       });
   });
 
   it('gets all recipes', async() => {
     const recipes = await Promise.all([
-      { name: 'cookies', directions: [] },
-      { name: 'cake', directions: [] },
-      { name: 'pie', directions: [] }
+      { name: 'cookies', directions: [], ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}},
+      { name: 'cake', directions: [], ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'} },
+      { name: 'pie', directions: [], ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'} }
     ].map(recipe => Recipe.insert(recipe)));
 
     return request(app)
@@ -61,6 +63,7 @@ describe('recipe-lab routes', () => {
         'put dough on cookie sheet',
         'bake for 10 minutes'
       ],
+      ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
     });
 
     return request(app)
@@ -72,7 +75,8 @@ describe('recipe-lab routes', () => {
           'mix ingredients',
           'put dough on cookie sheet',
           'bake for 10 minutes'
-        ]
+        ],
+        ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
       })
       .then(res => {
         expect(res.body).toEqual({
@@ -83,7 +87,8 @@ describe('recipe-lab routes', () => {
             'mix ingredients',
             'put dough on cookie sheet',
             'bake for 10 minutes'
-          ]
+          ],
+          ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
         });
       });
   });
@@ -97,6 +102,7 @@ describe('recipe-lab routes', () => {
         'put dough on cookie sheet',
         'bake for 10 minutes'
       ],
+      ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
     });
     
     const response = await request(app)
@@ -111,39 +117,10 @@ describe('recipe-lab routes', () => {
           'mix ingredients',
           'put dough on cookie sheet',
           'bake for 10 minutes'
-        ]
+        ],
+        ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
       }
     )
-  });
-
-  it('changes recipe', async() => {
-    const recipe = await Recipe.insert({
-      name: 'cookies',
-      directions: [
-        'preheat oven to 375',
-        'mix ingredients',
-        'put dough on cookie sheet',
-        'bake for 10 minutes'
-      ],
-    });
-    
-    const response = await request(app)
-      .put(`/api/v1/recipes/${recipe.id}`)
-      .send({
-        name: 'not cookie',
-        directions: [
-          'dont bake them',
-          'please',
-        ] 
-      });
-      expect(response.body).toEqual({
-        name: 'not cookie',
-        id: recipe.id,
-        directions: [
-          'dont bake them',
-          'please',
-        ] 
-      });
   });
 
   it('deletes a recipe', async() => {
