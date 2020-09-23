@@ -3,7 +3,8 @@ const pool = require('../lib/utils/pool');
 const request = require('supertest');
 const app = require('../lib/app');
 const Recipe = require('../lib/models/recipe');
-const Log = require('../lib/models/log')
+const Log = require('../lib/models/log');
+const { json } = require('express');
 
 describe('recipe-lab routes', () => {
   beforeEach(() => {
@@ -21,7 +22,7 @@ describe('recipe-lab routes', () => {
           'put dough on cookie sheet',
           'bake for 10 minutes'
         ],
-        ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+        ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}])
       })
       .then(res => {
         expect(res.body).toEqual({
@@ -33,16 +34,16 @@ describe('recipe-lab routes', () => {
             'put dough on cookie sheet',
             'bake for 10 minutes'
           ],
-          ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+          ingredients: [{amount: '1', measurement: 'tablespoon', name: 'sugar'}]
         });
       });
   });
 
   it('gets all recipes', async() => {
     const recipes = await Promise.all([
-      { name: 'cookies', directions: [], ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}},
-      { name: 'cake', directions: [], ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'} },
-      { name: 'pie', directions: [], ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'} }
+      { name: 'cookies', directions: [], ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}])},
+      { name: 'cake', directions: [], ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}]) },
+      { name: 'pie', directions: [], ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}]) }
     ].map(recipe => Recipe.insert(recipe)));
 
     return request(app)
@@ -63,7 +64,7 @@ describe('recipe-lab routes', () => {
         'put dough on cookie sheet',
         'bake for 10 minutes'
       ],
-      ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+      ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}])
     });
 
     return request(app)
@@ -76,7 +77,7 @@ describe('recipe-lab routes', () => {
           'put dough on cookie sheet',
           'bake for 10 minutes'
         ],
-        ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+        ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}])
       })
       .then(res => {
         expect(res.body).toEqual({
@@ -88,7 +89,7 @@ describe('recipe-lab routes', () => {
             'put dough on cookie sheet',
             'bake for 10 minutes'
           ],
-          ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+          ingredients: [{amount: '1', measurement: 'tablespoon', name: 'sugar'}]
         });
       });
   });
@@ -102,7 +103,7 @@ describe('recipe-lab routes', () => {
         'put dough on cookie sheet',
         'bake for 10 minutes'
       ],
-      ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+      ingredients: JSON.stringify([{amount: '1', measurement: 'tablespoon', name: 'sugar'}])
     });
     
     const response = await request(app)
@@ -118,7 +119,7 @@ describe('recipe-lab routes', () => {
           'put dough on cookie sheet',
           'bake for 10 minutes'
         ],
-        ingredients: {amount: '1', measurement: 'tablespoon', name: 'sugar'}
+        ingredients: [{amount: '1', measurement: 'tablespoon', name: 'sugar'}]
       }
     )
   });
